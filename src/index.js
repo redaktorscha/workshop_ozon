@@ -31,8 +31,8 @@ const showCartData = () => {
 
     let sum = 0;
     cardsPrice.forEach((cardPrice) => {
-        let price = parseFloat(cardPrice.textContent);
-        sum += price;
+        //let price = parseFloat(cardPrice.textContent);
+        sum += parseFloat(cardPrice.textContent);
     });
 
     cartTotal.textContent = sum;
@@ -88,71 +88,91 @@ const toggleCheckbox = (checkbox) => {
     });
 };
 
-//фильтр по цене
+
 
 //фильтр страницы
 const actionPage = () => {
-        const cards = document.querySelectorAll('.goods .card'),
-            discountCheckbox = document.getElementById('discount-checkbox'),
-            min = document.getElementById('min'),
-            max = document.getElementById('max'),
-            searchBtn = document.querySelector('.search-btn');
+    const cards = document.querySelectorAll('.goods .card'),
+        discountCheckbox = document.getElementById('discount-checkbox'),
+        min = document.getElementById('min'),
+        max = document.getElementById('max'),
+        searchBtn = document.querySelector('.search-btn');
 
 
-        //фильтр по поиску
-        const filterSearch = () => {
-            const search = document.querySelector('.search-wrapper_input'),                
-                searchText = new RegExp(search.value.trim(), 'i');
+    //фильтр по поиску
+    const filterSearch = () => {
+        const search = document.querySelector('.search-wrapper_input'),
+            searchText = new RegExp(search.value.trim(), 'i');
 
-                cards.forEach((card) => {
-                    const title = card.querySelector('.card-title');
+        cards.forEach((card) => {
+            const title = card.querySelector('.card-title');
 
-                    if(!searchText.test(title.textContent)) {
-                        card.parentNode.style.display = 'none';
-                    } else {
-                        card.parentNode.style.display = '';
-                    }                  
-                });
+            if (!searchText.test(title.textContent)) {
+                card.parentNode.style.display = 'none';
+            } else {
+                card.parentNode.style.display = '';
             }
+        });
+    }
+
+    //фильтр по цене
+    // const filterPrice = () => {
+    //     cards.forEach((card) => {
+    //         const cardPrice = card.querySelector('.card-price');
+    //         const price = parseFloat(cardPrice.textContent);
 
 
-            //фильтр по цене
-            const filterPrice = () => {
-                cards.forEach((card) => {
-                    const cardPrice = card.querySelector('.card-price');
-                    const price = parseFloat(cardPrice.textContent);
+    //         if ((min.value && price < min.value) || (max.value && price > max.value)) {
+    //             card.parentNode.style.display = 'none';
+    //         } else {
+    //             card.parentNode.style.display = '';
+    //         }
+    //     });
+    // }
+
+    //фильтр по акции
+    // const filterAction = () => {
+    //     cards.forEach((card) => {
+    //         if (discountCheckbox.checked) {
+    //             if (!card.querySelector('.card-sale')) {
+    //                 card.parentNode.style.display = 'none';
+    //             }
+    //         } else {
+    //             card.parentNode.style.display = '';
+    //         }
+    //     })
+    // }
+
+    //фильтр по цене и акции
+    const filterContent = () => {
+        cards.forEach((card) => {
+            const cardPrice = card.querySelector('.card-price');
+            const price = parseFloat(cardPrice.textContent);
+
+            if (discountCheckbox.checked) {                
+                if (!card.querySelector('.card-sale')) {
+                    card.parentNode.style.display = 'none';
+                }
+                if ((min.value && price < min.value) || (max.value && price > max.value)) {
+                    card.parentNode.style.display = 'none';
+                }
+            } else if ((min.value && price < min.value) || (max.value && price > max.value)) {
+                card.parentNode.style.display = 'none';
+            } else {
+                card.parentNode.style.display = '';
+            };
+        });
+    };
+
+    discountCheckbox.addEventListener('click', filterContent);
+    min.addEventListener('change', filterContent);
+    max.addEventListener('change', filterContent);
+    searchBtn.addEventListener('click', filterSearch);
+}
 
 
-                    if ((min.value && price < min.value) || (max.value && price > max.value)) {
-                        card.parentNode.style.display = 'none';
-                    } else {
-                        card.parentNode.style.display = '';
-                    }
-                });
-            }
 
-            //фильтр по акции
-            discountCheckbox.addEventListener('click', () => {
-                cards.forEach((card) => {
-                    if (discountCheckbox.checked) {
-                        if (!card.querySelector('.card-sale')) {
-                            card.parentNode.style.display = 'none';
-                        }
-                    } else {
-                        card.parentNode.style.display = '';
-                    }
-                })
-            });
-
-
-            min.addEventListener('change', filterPrice);
-            max.addEventListener('change', filterPrice);
-            searchBtn.addEventListener('click', filterSearch);
-        }
-
-
-
-        toggleCheckbox(document.querySelectorAll('.filter-check_checkbox'));
-        toggleCart(document.getElementById('cart'), document.querySelector('.cart'), document.querySelector('.cart-close'));
-        addToCart();
-        actionPage();
+toggleCheckbox(document.querySelectorAll('.filter-check_checkbox'));
+toggleCart(document.getElementById('cart'), document.querySelector('.cart'), document.querySelector('.cart-close'));
+addToCart();
+actionPage();
