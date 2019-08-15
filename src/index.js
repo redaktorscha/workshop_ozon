@@ -56,13 +56,13 @@ const addToCart = () => {
 
     addedCards.forEach((card) => {
         const btn = card.querySelector('button');
-    
+
         btn.addEventListener('click', () => {
             const cardClone = card.cloneNode(true);
             cartWrapper.appendChild(cardClone);
             cartEmpty.remove();
             showCartData();
-    
+
             const removeBtn = cardClone.querySelector('.btn'); //изменение текста кнопки в добавленной карточке
             removeBtn.textContent = 'Удалить из корзины';
             removeBtn.addEventListener('click', () => {
@@ -80,7 +80,6 @@ const toggleCheckbox = (checkbox) => {
     checkbox.forEach((elem) => {
         elem.addEventListener('change', function () {
             if (this.checked) {
-                console.log('checked');
                 this.nextElementSibling.classList.add('checked');
             } else {
                 this.nextElementSibling.classList.remove('checked');
@@ -89,30 +88,71 @@ const toggleCheckbox = (checkbox) => {
     });
 };
 
-//фильтр акции
-const actionFilter = () => {
-    const cards = document.querySelectorAll('.goods .card'),
-        discountCheckbox = document.getElementById('discount-checkbox'),
-        min = document.getElementById('min'),
-        max = document.getElementById('max');
+//фильтр по цене
 
-        discountCheckbox.addEventListener('click', () => {
-            cards.forEach((card) => {
-                if (discountCheckbox.checked) {
-                    if (!card.querySelector('.card-sale')) {
+//фильтр страницы
+const actionPage = () => {
+        const cards = document.querySelectorAll('.goods .card'),
+            discountCheckbox = document.getElementById('discount-checkbox'),
+            min = document.getElementById('min'),
+            max = document.getElementById('max'),
+            searchBtn = document.querySelector('.search-btn');
+
+
+        //фильтр по поиску
+        const filterSearch = () => {
+            const search = document.querySelector('.search-wrapper_input'),                
+                searchText = new RegExp(search.value.trim(), 'i');
+
+                cards.forEach((card) => {
+                    const title = card.querySelector('.card-title');
+
+                    if(!searchText.test(title.textContent)) {
                         card.parentNode.style.display = 'none';
+                    } else {
+                        card.parentNode.style.display = '';
+                    }                  
+                });
+            }
+
+
+            //фильтр по цене
+            const filterPrice = () => {
+                cards.forEach((card) => {
+                    const cardPrice = card.querySelector('.card-price');
+                    const price = parseFloat(cardPrice.textContent);
+
+
+                    if ((min.value && price < min.value) || (max.value && price > max.value)) {
+                        card.parentNode.style.display = 'none';
+                    } else {
+                        card.parentNode.style.display = '';
                     }
-                    card.parentNode.style.display = '';
-                }
-                }
-                
+                });
+            }
 
-            )
-        })
+            //фильтр по акции
+            discountCheckbox.addEventListener('click', () => {
+                cards.forEach((card) => {
+                    if (discountCheckbox.checked) {
+                        if (!card.querySelector('.card-sale')) {
+                            card.parentNode.style.display = 'none';
+                        }
+                    } else {
+                        card.parentNode.style.display = '';
+                    }
+                })
+            });
 
-}
 
-toggleCheckbox(document.querySelectorAll('.filter-check_checkbox'));
-toggleCart(document.getElementById('cart'), document.querySelector('.cart'), document.querySelector('.cart-close'));
-addToCart();
-actionFilter();
+            min.addEventListener('change', filterPrice);
+            max.addEventListener('change', filterPrice);
+            searchBtn.addEventListener('click', filterSearch);
+        }
+
+
+
+        toggleCheckbox(document.querySelectorAll('.filter-check_checkbox'));
+        toggleCart(document.getElementById('cart'), document.querySelector('.cart'), document.querySelector('.cart-close'));
+        addToCart();
+        actionPage();
