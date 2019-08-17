@@ -3,6 +3,8 @@ const cards = document.querySelectorAll('.goods .card');
 const cartWrapper = document.querySelector('.cart-wrapper');
 const cartEmpty = document.querySelector('#cart-empty');
 const goodsCounter = document.querySelector('.counter');
+let sorted = false;
+let cat;
 
 
 
@@ -174,8 +176,10 @@ const actionPage = () => {
                 card.parentNode.style.display = 'none';
             } else if (discountCheckbox.checked && !discount) {
                 card.parentNode.style.display = 'none';
+            } else if (sorted && card.dataset.category !== cat) {
+                card.parentNode.style.display = 'none';
             } else {
-                card.parentNode.style.display = ''
+                card.parentNode.style.display = '';
             }
         })
     };
@@ -238,7 +242,7 @@ function renderCards(data) {
 };
 
 function renderCatalogue() {
-    const cards = document.querySelectorAll('.goods .card');
+    const cards = document.querySelectorAll('.goods .card');    
     const catalogueList = document.querySelector('.catalog-list');
     const catalogueWrapper = document.querySelector('.catalog');
     const catalogueBtn = document.querySelector('.catalog-button');
@@ -263,12 +267,15 @@ function renderCatalogue() {
         if (event.target.tagName === 'LI') {
             cards.forEach((card) => {
                 if (card.dataset.category === event.target.textContent) {
-                    card.parentNode.style.display = ''
+                    card.parentNode.style.display = '';
+                    sorted = true;
+                    cat = card.dataset.category;
                 } else {
                     card.parentNode.style.display = 'none';
                 }
             });
-        }
+        };
+        
     });
 };
 
