@@ -90,100 +90,53 @@ const toggleCheckbox = (checkbox) => {
     });
 };
 
+//фильтр по поиску
+const filterSearch = () => {
+    const cards = document.querySelectorAll('.goods .card');
+    const search = document.querySelector('.search-wrapper_input'),
+        searchText = new RegExp(search.value.trim(), 'i');
+
+    cards.forEach((card) => {
+        const title = card.querySelector('.card-title');
+
+        if (!searchText.test(title.textContent)) {
+            card.parentNode.style.display = 'none';
+        } else {
+            card.parentNode.style.display = '';
+        };
+        search.value = '';
+    });
+}
 
 
-//фильтр страницы
-const actionPage = () => {
+function filter() {
     const cards = document.querySelectorAll('.goods .card'),
         discountCheckbox = document.getElementById('discount-checkbox'),
         min = document.getElementById('min'),
-        max = document.getElementById('max'),
-        searchBtn = document.querySelector('.search-btn');
+        max = document.getElementById('max');
 
+    cards.forEach((card) => {
+        const cardPrice = card.querySelector('.card-price');
+        const price = parseFloat(cardPrice.textContent);
+        const discount = card.querySelector('.card-sale');
+        if ((min.value && price < min.value) || (max.value && price > max.value)) {
+            card.parentNode.style.display = 'none';
+        } else if (discountCheckbox.checked && !discount) {
+            card.parentNode.style.display = 'none';
+        } else if (sorted && card.dataset.category !== cat) {
+            card.parentNode.style.display = 'none';
+        } else {
+            card.parentNode.style.display = '';
+        }
+    })
+};
 
-    //фильтр по поиску
-    const filterSearch = () => {
-        const search = document.querySelector('.search-wrapper_input'),
-            searchText = new RegExp(search.value.trim(), 'i');
-
-        cards.forEach((card) => {
-            const title = card.querySelector('.card-title');
-
-            if (!searchText.test(title.textContent)) {
-                card.parentNode.style.display = 'none';
-            } else {
-                card.parentNode.style.display = '';
-            };
-            search.value = '';
-        });
-    }
-
-    //фильтр по цене
-    // const filterPrice = () => {
-    //     cards.forEach((card) => {
-    //         const cardPrice = card.querySelector('.card-price');
-    //         const price = parseFloat(cardPrice.textContent);
-
-
-    //         if ((min.value && price < min.value) || (max.value && price > max.value)) {
-    //             card.parentNode.style.display = 'none';
-    //         } else {
-    //             card.parentNode.style.display = '';
-    //         }
-    //     });
-    // }
-
-    //фильтр по акции
-    // const filterAction = () => {
-    //     cards.forEach((card) => {
-    //         if (discountCheckbox.checked) {
-    //             if (!card.querySelector('.card-sale')) {
-    //                 card.parentNode.style.display = 'none';
-    //             }
-    //         } else {
-    //             card.parentNode.style.display = '';
-    //         }
-    //     })
-    // }
-
-    //фильтр по цене и акции
-    // const filterContent = () => {
-    //     cards.forEach((card) => {
-    //         const cardPrice = card.querySelector('.card-price');
-    //         const price = parseFloat(cardPrice.textContent);
-
-    //         if (discountCheckbox.checked) {                
-    //             if (!card.querySelector('.card-sale')) {
-    //                 card.parentNode.style.display = 'none';
-    //             }
-    //             if ((min.value && price < min.value) || (max.value && price > max.value)) {
-    //                 card.parentNode.style.display = 'none';
-    //             }
-    //         } else if ((min.value && price < min.value) || (max.value && price > max.value)) {
-    //             card.parentNode.style.display = 'none';
-    //         } else {
-    //             card.parentNode.style.display = '';
-    //         };
-    //     });
-    // };
-
-    function filter() {
-        cards.forEach((card) => {
-            const cardPrice = card.querySelector('.card-price');
-            const price = parseFloat(cardPrice.textContent);
-            const discount = card.querySelector('.card-sale');
-            if ((min.value && price < min.value) || (max.value && price > max.value)) {
-                card.parentNode.style.display = 'none';
-            } else if (discountCheckbox.checked && !discount) {
-                card.parentNode.style.display = 'none';
-            } else if (sorted && card.dataset.category !== cat) {
-                card.parentNode.style.display = 'none';
-            } else {
-                card.parentNode.style.display = '';
-            }
-        })
-    };
-
+//фильтр страницы
+const actionPage = () => {
+    const searchBtn = document.querySelector('.search-btn'),
+        discountCheckbox = document.getElementById('discount-checkbox'),
+        min = document.getElementById('min'),
+        max = document.getElementById('max');
 
     discountCheckbox.addEventListener('click', filter);
     min.addEventListener('change', filter);
@@ -242,7 +195,7 @@ function renderCards(data) {
 };
 
 function renderCatalogue() {
-    const cards = document.querySelectorAll('.goods .card');    
+    const cards = document.querySelectorAll('.goods .card');
     const catalogueList = document.querySelector('.catalog-list');
     const catalogueWrapper = document.querySelector('.catalog');
     const catalogueBtn = document.querySelector('.catalog-button');
@@ -263,7 +216,7 @@ function renderCatalogue() {
         } else {
             catalogueWrapper.style.display = 'block';
         }
-        
+
         if (event.target.tagName === 'LI') {
             cards.forEach((card) => {
                 if (card.dataset.category === event.target.textContent) {
@@ -274,8 +227,9 @@ function renderCatalogue() {
                     card.parentNode.style.display = 'none';
                 }
             });
+            filter();
         };
-        
+
     });
 };
 
